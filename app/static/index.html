@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>行程咚咚</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="mark">咚</span>
+      <div>
+        <h1>行程咚咚</h1>
+        <p>基本信息表 → 两周行程 → 每日卡片</p>
+      </div>
+    </div>
+    <nav class="views" id="views">
+      <button data-view="basic" class="active" type="button">基本信息表</button>
+      <button data-view="schedule" type="button">行程安排</button>
+      <button data-view="cards" type="button">卡片</button>
+      <button data-view="versions" type="button">版本</button>
+      <button data-view="settings" type="button">设置</button>
+    </nav>
+    <div class="top-actions">
+      <span id="userLabel" class="user-label"></span>
+      <span id="saveState" class="pill neutral">已保存</span>
+      <button id="demoBtn" class="ghost small" type="button">示例</button>
+      <button id="voiceBtn" class="ghost small" type="button">语音</button>
+      <button id="ocrBtn" class="ghost small" type="button">名片</button>
+      <button id="importBtn" class="ghost small" type="button">导入</button>
+      <button id="downloadBtn" class="primary small" type="button">下载</button>
+      <button id="logoutBtn" class="ghost small hidden" type="button">退出</button>
+    </div>
+  </header>
+
+  <section id="authScreen" class="auth-screen hidden">
+    <div class="auth-card">
+      <div class="auth-brand"><span class="mark">咚</span><div><h1>行程咚咚</h1><p>基本信息表 → 两周行程 → 每日卡片</p></div></div>
+      <div class="auth-tabs"><button id="authTabLogin" class="active" type="button">登录</button><button id="authTabRegister" type="button">注册</button></div>
+      <p class="hint">每个账号只看到自己的基本信息表、行程、卡片、版本和邮件设置。</p>
+      <label class="field-label">账号<input id="authUsername" autocomplete="username" placeholder="3–32 个字符" /></label>
+      <label class="field-label">密码<input id="authPassword" type="password" autocomplete="current-password" placeholder="至少 8 位" /></label>
+      <label id="authConfirmRow" class="field-label hidden">确认密码<input id="authPassword2" type="password" autocomplete="new-password" /></label>
+      <p id="authError" class="auth-error"></p>
+      <button id="authSubmit" class="primary" type="button">登录</button>
+      <p class="auth-note">本机运行 · 不上传第三方</p>
+    </div>
+  </section>
+
+  <main class="layout hidden" id="appLayout">
+    <section class="workspace">
+      <section id="view-basic" class="view active">
+        <div class="toolbar panel">
+          <div class="searchbox">
+            <input id="basicSearch" type="search" placeholder="搜索人员、联系方式、地址或任意字段" />
+            <select id="basicFieldFilter"><option value="">全部字段</option></select>
+            <span id="basicSearchMeta" class="hint"></span>
+            <button id="basicPrev" class="icon-btn" type="button" title="上一个">↑</button>
+            <button id="basicNext" class="icon-btn" type="button" title="下一个">↓</button>
+            <label class="check"><input id="basicFilter" type="checkbox" /> 过滤行</label>
+          </div>
+          <div class="toolbar-actions">
+            <button id="addRowBtn" class="ghost small" type="button">加行</button>
+            <button id="addFieldBtn" class="ghost small" type="button">加字段</button>
+            <button id="manageFieldsBtn" class="ghost small" type="button">字段管理</button>
+            <button id="basicSaveBtn" class="primary small" type="button">手动保存</button>
+          </div>
+        </div>
+        <div class="sheet-wrap panel">
+          <div class="sheet-title">
+            <h2>基本信息表</h2>
+            <span id="basicMeta" class="hint"></span>
+          </div>
+          <div class="table-scroll">
+            <table id="basicGrid" class="sheet"></table>
+          </div>
+        </div>
+        <div id="basicSearchResults" class="panel search-results hidden"></div>
+      </section>
+
+      <section id="view-schedule" class="view">
+        <div class="toolbar panel">
+          <div class="searchbox">
+            <input id="scheduleSearch" type="search" placeholder="搜索日期、时段或行程内容" />
+            <span id="scheduleSearchMeta" class="hint"></span>
+            <button id="schedulePrev" class="icon-btn" type="button" title="上一个">↑</button>
+            <button id="scheduleNext" class="icon-btn" type="button" title="下一个">↓</button>
+          </div>
+          <div class="toolbar-actions">
+            <div class="week-nav">
+              <button id="weekPrev" class="week-arrow" type="button" title="上一周" aria-label="上一周">‹</button>
+              <div class="week-tabs">
+                <button id="weekThis" class="active" type="button">本周</button>
+                <button id="weekNext" type="button">下周</button>
+              </div>
+              <button id="weekAfter" class="week-arrow" type="button" title="下一周" aria-label="下一周">›</button>
+            </div>
+            <label class="inline-label">起始周日 <input id="scheduleStart" type="date" /></label>
+            <button id="buildScheduleBtn" class="ghost small" type="button">从基本信息生成</button>
+            <button id="multiSelectBtn" class="ghost small" type="button">多选</button>
+            <button id="clearCellsBtn" class="ghost small clear-btn" type="button" title="清除选中格子的行程内容">
+              <svg class="wand" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M4 20 15 9" />
+                <path d="M17 4l.9 2.1L20 7l-2.1.9L17 10l-.9-2.1L14 7l2.1-.9z" />
+                <path d="M20 13v2M22 14h-2M7 4v2M8 5H6" />
+              </svg>
+              清除
+            </button>
+            <button id="scheduleSaveBtn" class="primary small" type="button">手动保存</button>
+          </div>
+        </div>
+        <div class="sheet-wrap panel">
+          <div class="sheet-title">
+            <h2>行程安排</h2>
+            <span id="scheduleMeta" class="hint"></span>
+          </div>
+          <div class="table-scroll">
+            <div id="scheduleGrid" class="schedule-grid"></div>
+          </div>
+        </div>
+        <div id="pendingPanel" class="panel pending hidden"></div>
+      </section>
+
+      <section id="view-cards" class="view">
+        <div class="toolbar panel">
+          <div class="searchbox">
+            <label class="inline-label">从 <input id="cardsFrom" type="date" /></label>
+            <label class="inline-label">到 <input id="cardsTo" type="date" /></label>
+            <button id="loadCardsBtn" class="ghost small" type="button">刷新卡片</button>
+          </div>
+          <div class="toolbar-actions">
+            <button id="downloadCardBtn" class="primary small" type="button">下载当前卡片 PNG</button>
+          </div>
+        </div>
+        <div class="cards-layout">
+          <div class="panel card-list" id="cardList"></div>
+          <div class="panel card-preview" id="cardPreview">
+            <p class="hint">选择左侧日期查看卡片。</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="view-versions" class="view">
+        <div class="toolbar panel">
+          <div class="searchbox">
+            <label class="inline-label">文档
+              <select id="versionKind">
+                <option value="basic">基本信息表</option>
+                <option value="schedule">行程安排</option>
+              </select>
+            </label>
+            <button id="refreshVersions" class="ghost small" type="button">刷新</button>
+            <input id="versionSearch" type="search" placeholder="在当前版本中搜索" />
+          </div>
+        </div>
+        <div class="versions-layout">
+          <div class="panel version-list" id="versionList"></div>
+          <div class="panel version-detail" id="versionDetail">
+            <p class="hint">选择版本查看快照与恢复。</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="view-settings" class="view">
+        <div class="settings-grid">
+          <div class="panel settings-card">
+            <div class="panel-head"><h2>每日邮件</h2><span id="smtpState" class="pill neutral">未配置 SMTP</span></div>
+            <label class="field-label">收件人（逗号分隔）<input id="emailRecipients" /></label>
+            <div class="two-col">
+              <label class="field-label">发送时间<input id="emailTime" type="time" /></label>
+              <label class="check"><input id="emailIncludeContact" type="checkbox" /> 包含联系方式</label>
+            </div>
+            <label class="check"><input id="emailEnabled" type="checkbox" /> 启用每日发送</label>
+            <details class="smtp-box">
+              <summary>SMTP 发送服务器（QQ 邮箱等）</summary>
+              <div class="two-col">
+                <label class="field-label">服务器<input id="smtpHost" placeholder="smtp.qq.com" /></label>
+                <label class="field-label">端口<input id="smtpPort" placeholder="465" /></label>
+                <label class="check"><input id="smtpSsl" type="checkbox" checked /> SSL</label>
+              </div>
+              <div class="two-col">
+                <label class="field-label">账号<input id="smtpUser" placeholder="你的QQ邮箱@qq.com" /></label>
+                <label class="field-label">授权码 / 密码<input id="smtpPass" type="password" placeholder="留空表示不修改" /></label>
+              </div>
+              <label class="field-label">发件人<input id="smtpFrom" placeholder="你的QQ邮箱@qq.com" /></label>
+              <p class="hint">QQ 邮箱：smtp.qq.com / 465 / 勾选 SSL；密码填授权码，不是 QQ 登录密码。</p>
+              <div class="card-actions"><button id="testEmailBtn" class="ghost small" type="button">发送测试邮件</button></div>
+            </details>
+            <div class="card-actions">
+              <button id="saveEmailSettings" class="primary small" type="button">保存设置</button>
+              <button id="previewEmailBtn" class="ghost small" type="button">预览今天</button>
+              <button id="sendEmailBtn" class="ghost small" type="button">立即发送今天</button>
+            </div>
+            <div id="emailLogs" class="logs"></div>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <aside class="agent-panel panel">
+      <div class="panel-head">
+        <h2>任务助手</h2>
+        <button id="agentToggle" class="icon-btn" type="button" title="收起">−</button>
+      </div>
+      <div id="agentBody" class="agent-body">
+        <div class="agent-tasks">
+          <button data-agent="build_schedule" type="button">生成行程</button>
+          <button data-agent="make_cards" type="button">生成卡片</button>
+          <button data-agent="daily_brief" type="button">发送简报</button>
+        </div>
+        <div class="agent-instruction">
+          <input id="agentInstruction" placeholder="例如：把周二下午的拜访改到周三上午" />
+          <button id="agentReschedule" class="primary small" type="button">执行调格</button>
+        </div>
+        <div id="agentPlan" class="plan-list"></div>
+        <div id="agentQuestion" class="agent-question hidden"></div>
+        <div id="agentTrace" class="agent-trace"><p class="hint">运行任务后，这里显示真实工具调用。</p></div>
+        <div id="agentSummary" class="agent-summary hidden"></div>
+      </div>
+    </aside>
+  </main>
+
+  <div id="toast" class="toast hidden"></div>
+  <div id="modal" class="modal hidden">
+    <div class="modal-card">
+      <div class="modal-head"><h2 id="modalTitle"></h2><button id="modalClose" class="icon-btn" type="button">×</button></div>
+      <div id="modalBody" class="modal-body"></div>
+      <div id="modalActions" class="modal-actions"></div>
+    </div>
+  </div>
+  <input id="fileInput" type="file" accept=".xlsx" hidden />
+  <input id="imageInput" type="file" accept="image/*" capture="environment" hidden />
+  <script type="module" src="/static/app.js"></script>
+</body>
+</html>

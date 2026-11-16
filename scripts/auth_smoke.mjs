@@ -1,0 +1,17 @@
+import {Browser} from 'file:///C:/Users/zpq99/.agents/skills/design-taste-frontend/scripts/lib/cdp.mjs';
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const b=await Browser.launch({width:1200,height:900});const p=await b.newPage({width:1200,height:900});
+const wait=async(e,ms=15000)=>{const t=Date.now();while(Date.now()-t<ms){if(await p.eval(e).catch(()=>false))return;await sleep(150)}throw new Error('timeout '+e)};
+const username='owner_'+Date.now();
+await p.goto('http://127.0.0.1:9870/');await wait("!document.querySelector('#authScreen').classList.contains('hidden')");
+await p.eval(()=>document.querySelector('#authTabRegister').click());
+await p.eval(u=>{document.querySelector('#authUsername').value=u;document.querySelector('#authPassword').value='ownerpass1';document.querySelector('#authPassword2').value='ownerpass1';},username);
+await p.eval(()=>document.querySelector('#authSubmit').click());
+await wait("!document.querySelector('#appLayout').classList.contains('hidden') && document.querySelector('#basicGrid')");
+console.log('user',await p.eval(()=>document.querySelector('#userLabel').textContent));
+console.log('rows',await p.eval(()=>document.querySelectorAll('#basicGrid tbody tr').length));
+await p.screenshot({path:'test-results/auth-home.jpg',quality:85,fullPage:true});
+await p.eval(()=>document.querySelector('#logoutBtn').click());await wait("!document.querySelector('#authScreen').classList.contains('hidden')");
+console.log('logout ok');
+console.log('errors',p.consoleErrors);
+await b.close();

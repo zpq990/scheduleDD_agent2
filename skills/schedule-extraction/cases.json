@@ -1,0 +1,157 @@
+[
+  {
+    "name": "1.png 三行",
+    "baseDate": "2026-11-16",
+    "rows": [
+      {
+        "person": "A君",
+        "note": "打篮球",
+        "purpose": "预备客户",
+        "note2": "后天上午约了时间，具体看"
+      },
+      {
+        "person": "宋子乔",
+        "address": "上海南站地铁站",
+        "note": "闲鱼二手交易",
+        "purpose": "拿到照相机",
+        "note2": "后天下午3点准时交易"
+      },
+      {
+        "person": "张建华",
+        "address": "徐汇区仁爱大厦",
+        "note": "跟进客户",
+        "purpose": "促成交易，要带礼物",
+        "note2": "明天早上看时间拜访"
+      }
+    ],
+    "expected": [
+      {
+        "person": "A君",
+        "date": "2026-11-18",
+        "slot": "上午",
+        "time": "",
+        "text": "打篮球 · 预备客户",
+        "status": "ready"
+      },
+      {
+        "person": "宋子乔",
+        "date": "2026-11-18",
+        "slot": "下午",
+        "time": "15:00",
+        "text": "15:00 上海南站地铁站：闲鱼二手交易 · 拿到照相机",
+        "status": "ready"
+      },
+      {
+        "person": "张建华",
+        "date": "2026-11-17",
+        "slot": "上午",
+        "time": "",
+        "text": "徐汇区仁爱大厦：跟进客户 · 促成交易，要带礼物",
+        "status": "ready"
+      }
+    ]
+  },
+  {
+    "name": "模糊时间",
+    "baseDate": "2026-11-16",
+    "rows": [
+      {
+        "person": "模糊",
+        "note": "开会",
+        "note2": "明天3点见客户"
+      }
+    ],
+    "expected": [
+      {
+        "person": "模糊",
+        "date": "2026-11-17",
+        "slot": "",
+        "time": "",
+        "status": "ambiguous_time"
+      }
+    ]
+  },
+  {
+    "name": "无时间",
+    "baseDate": "2026-11-16",
+    "rows": [
+      {
+        "person": "无时间",
+        "note": "送资料",
+        "note2": "明天去找他"
+      }
+    ],
+    "expected": [
+      {
+        "person": "无时间",
+        "date": "2026-11-17",
+        "slot": "需要配合",
+        "time": "",
+        "status": "needs_time"
+      }
+    ]
+  },
+  {
+    "name": "睡觉前",
+    "baseDate": "2026-11-16",
+    "rows": [
+      {
+        "person": "睡前",
+        "note": "复盘",
+        "note2": "明天睡觉前整理资料"
+      }
+    ],
+    "expected": [
+      {
+        "person": "睡前",
+        "date": "2026-11-17",
+        "slot": "晚上",
+        "time": "",
+        "status": "ready"
+      }
+    ]
+  },
+  {
+    "name": "自动扩展周",
+    "baseDate": "2026-11-16",
+    "rows": [
+      {
+        "person": "跨周",
+        "address": "虹桥",
+        "note": "会议",
+        "note2": "12月3日上午10点开会"
+      }
+    ],
+    "expected": [
+      {
+        "person": "跨周",
+        "date": "2026-12-03",
+        "slot": "上午",
+        "time": "10:00",
+        "status": "ready"
+      }
+    ]
+  },
+  {
+    "name": "2.png 下个礼拜四中午",
+    "baseDate": "2026-11-16",
+    "rows": [
+      {
+        "person": "CA",
+        "note": "人民广场约饭",
+        "purpose": "维持联络",
+        "note2": "下个礼拜四中午"
+      }
+    ],
+    "expected": [
+      {
+        "person": "CA",
+        "date": "2026-11-26",
+        "slot": "中午",
+        "time": "",
+        "text": "人民广场约饭 · 维持联络",
+        "status": "ready"
+      }
+    ]
+  }
+]
